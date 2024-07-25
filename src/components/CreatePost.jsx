@@ -70,6 +70,12 @@ function CreatePost() {
                                 Upload
                             </Button>
                         </label>
+                        {selectedFile && (
+                        <Box sx={{ marginTop: 2 }}>
+                            <h4>Selected file:</h4>
+                            <p>{selectedFile.name}</p>
+                        </Box>
+                        )}
                         <Button variant="contained" color="primary">Post</Button>
                     </Box>
                 )}
