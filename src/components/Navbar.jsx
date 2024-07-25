@@ -1,7 +1,10 @@
-import React from "react";
+import * as React from 'react';
 import { Link } from "react-router-dom";
 import SavingsIcon from '@mui/icons-material/Savings';
 import Button from '@mui/material/Button';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SearchIcon from '@mui/icons-material/Search';
+import { Input, InputAdornment } from '@mui/material';
 
 function Navbar() {
     return (
@@ -13,6 +16,14 @@ function Navbar() {
                     BlogHog
                     </Link>
                 </h1>
+                <Input
+                    placeholder="Search here…"
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    }
+                />
                 <div style={buttonContainerStyle}>
                     <Button 
                         variant="contained" 
@@ -30,8 +41,9 @@ function Navbar() {
                         to="/Profile"
                         style={buttonStyle}
                     >
-                        Profile
+                        <AccountCircleIcon/>
                     </Button>
+                    
                 </div>
             </div>
         </header>
