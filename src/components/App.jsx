@@ -3,29 +3,25 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CreatePost from './CreatePost';
+import Register from './Register';
 
 function App() {
-<<<<<<< HEAD
-    return(
-        <div>
-        <Navbar />
-            <h1>
-                Hello World! 1
-            </h1>
-        </div>
-    )
-=======
+    
+    function routeProfile(){
+        return("/Register")
+    }
+
     return (
         <Router>
             <Navbar />
             <Routes>
                 <Route path="/" element={<h1>Hello World!</h1>} /> {/* Home route */}
                 <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
+                <Route path={routeProfile()} element={<Register />} /> {/* Route for Register */}
             </Routes>
             <Footer />
         </Router>
     );
->>>>>>> 0165e053cc0b3457ce8b61aeae8bf398b794779d
 }
 
 export default App;
