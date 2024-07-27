@@ -4,18 +4,18 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import CreatePost from './CreatePost';
 import Register from './Register';
+import Home from './Home'; // Import the Home component
 
 function App() {
-    
     function routeProfile(){
-        return("/Register")
+        return("/Register");
     }
 
     return (
         <Router>
             <Navbar />
             <Routes>
-                <Route path="/" element={<h1>Hello World!</h1>} /> {/* Home route */}
+                <Route path="/" element={<Home />} /> {/* Home route displaying posts */}
                 <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
                 <Route path={routeProfile()} element={<Register />} /> {/* Route for Register */}
             </Routes>
