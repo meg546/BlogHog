@@ -45,11 +45,6 @@ footer p {
 
 /* //////////////////////////////////////////////// */
 /* Styling for the Post.jsx file, for the homescreen posts */
-/* Post.css */
-
-/* Post.css */
-
-/* Base styles for the post component */
 .post {
   background-color: #fff;
   border-radius: 0.625rem; 
@@ -117,52 +112,6 @@ footer p {
   margin-right: 0.9375rem;
 }
 
-/* Media queries for responsive design */
-
-@media (max-width: 768px) {
-  .post {
-    padding: 1rem;
-    margin: 1rem;
-  }
-
-  .author, .post-time, .post-content h2 {
-    font-size: 1rem;
-  }
-
-  .reaction {
-    font-size: 0.75rem;
-  }
-
-  .post-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .reaction:not(:last-child) {
-    margin-right: 0;
-    margin-bottom: 0.625rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .post {
-    padding: 0.625rem;
-    margin: 0.625rem;
-  }
-
-  .author, .post-time, .post-content h2 {
-    font-size: 0.875rem;
-  }
-
-  .reaction {
-    font-size: 0.75rem;
-  }
-
-  .post-header, .post-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
 /* //////////////////////////////////////////////// */
 
 
