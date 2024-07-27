@@ -4,16 +4,18 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
-import { Input, InputAdornment } from '@mui/material';
+import { Input, InputAdornment, useTheme } from '@mui/material';
 
 function Navbar() {
+    const theme = useTheme();
+
     return (
         <header style={headerStyle}>
             <div style={navContainerStyle}>
                 <h1 style={brandStyle}>
-                    <Link to="/" style={logoLinkStyle}>
-                    <SavingsIcon />
-                    BlogHog
+                    <Link to="/" style={{ ...logoLinkStyle, color: theme.palette.primary.main }}>
+                        <SavingsIcon color='primary' />
+                        BlogHog
                     </Link>
                 </h1>
                 <Input
@@ -75,11 +77,11 @@ const buttonContainerStyle = {
 };
 
 const buttonStyle = {
+    width: 'auto'
 };
 
 const logoLinkStyle = {
     textDecoration: 'none',
-    color: 'inherit', // Keeps the logo's color consistent
     display: 'flex',
     alignItems: 'center',
 };
