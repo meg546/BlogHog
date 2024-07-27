@@ -45,24 +45,41 @@ footer p {
 
 /* //////////////////////////////////////////////// */
 /* Styling for the Post.jsx file, for the homescreen posts */
+/* Post.css */
+
+/* Post.css */
+
+/* Base styles for the post component */
 .post {
   background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 600px;
-  margin: 20px auto;
+  border-radius: 0.625rem; 
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.25); 
+  padding: 1.25rem; 
+  max-width: 50rem; 
+  margin: 1.25rem auto; 
   font-family: Arial, sans-serif;
+  transition: box-shadow 0.3s ease;
 }
 
-.post-header {
+.post:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3); 
+}
+
+.post-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.post-header,
+.post-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .author {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #333;
 }
 
@@ -72,28 +89,79 @@ footer p {
 }
 
 .post-time {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #777;
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 .post-content h2 {
-  font-size: 18px;
-  margin: 10px 0;
+  font-size: 1.125rem;
+  margin: 0.625rem 0;
 }
 
 .post-footer {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  margin-top: 0.9375rem;
 }
 
 .reaction {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #555;
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+.reaction:not(:last-child) {
+  margin-right: 0.9375rem;
+}
+
+/* Media queries for responsive design */
+
+@media (max-width: 768px) {
+  .post {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .author, .post-time, .post-content h2 {
+    font-size: 1rem;
+  }
+
+  .reaction {
+    font-size: 0.75rem;
+  }
+
+  .post-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reaction:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 0.625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .post {
+    padding: 0.625rem;
+    margin: 0.625rem;
+  }
+
+  .author, .post-time, .post-content h2 {
+    font-size: 0.875rem;
+  }
+
+  .reaction {
+    font-size: 0.75rem;
+  }
+
+  .post-header, .post-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 /* //////////////////////////////////////////////// */
 
