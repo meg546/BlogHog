@@ -39,7 +39,6 @@ function CreatePost() {
                             label="Title"
                             required
                             inputProps={{ maxLength: 300 }}
-                            helperText="0/300"
                             sx={{ marginBottom: 2 }}
                         />
                         <TextField
@@ -61,7 +60,6 @@ function CreatePost() {
                             label="Title"
                             required
                             inputProps={{ maxLength: 300 }}
-                            helperText="0/300"
                             sx={{ marginBottom: 2 }}
                         />
                         <label htmlFor="icon-button-file">
