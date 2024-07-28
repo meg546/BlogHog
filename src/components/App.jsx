@@ -5,6 +5,8 @@ import Footer from './Footer';
 import CreatePost from './CreatePost';
 import Register from './Register';
 import Home from './Home';
+import Login from './Login';
+import Profile from './Profile';
 import DetailedPost from './DetailedPost';
 import testImage from './this-horrendous-abomination-has-absolutely-carried-me-v0-m1xnw838tted1.webp'
 
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/posts/:postId" element={<DetailedPost posts={posts} />} /> {/* Detailed post view */}
                 <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
                 <Route path={routeProfile()} element={<Register />} /> {/* Route for Register */}
+                <Route path="/Login" element={<Login />} />
+                <Route path="/Profile" element={<Profile />} />
             </Routes>
             <Footer />
         </Router>
