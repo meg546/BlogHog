@@ -39,26 +39,26 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Function checks if username passed through Blogpost model exists in User model
-const validateUsernamesExistence = async (usernames) => {
+const checkUserExists = async (usernames) => {
     const users = await User.find({username: {$in: usernames}});
-    const existingUsernames = new Set(users.map(user => user.username));
+    const existingUsers = new Set(users.map(user => user.username));
 
-    return usernames.every(username => existingUsernames.has(username));
+    return usernames.every(username => existingUsers.has(username));
 };
 
 // Creating blogposts
-app.post('/api/blogpost', async (req, res) => {
-    const { author, comments } = req.body;
+app.post('/api/blogposts', async (req, res) => {
+    const {author, comments} = req.body;
 
     // Validate the author
-    const authorExists = await validateUsernamesExistence([author]);
+    const authorExists = await checkUserExists([author]);
     if (!authorExists) {
         return res.status(400).send('Author does not exist.');
     }
 
     // Validate the users in comments
     const commentUsernames = comments.map(comment => comment.user);
-    const allCommentUsersExist = await validateUsernamesExistence(commentUsernames);
+    const allCommentUsersExist = await checkUserExists(commentUsernames);
     if (!allCommentUsersExist) {
         return res.status(400).send('One or more comment users do not exist.');
     }

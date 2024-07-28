@@ -34,8 +34,9 @@ const blogpostSchema = new mongoose.Schema({
     },
 
     // Filepath will be stored in type
-    coverImage: {
-        type: String,
+    images: {
+        type: [String],
+        default: [],
         trim: true
     },
     comments: [{

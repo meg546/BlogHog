@@ -3,18 +3,17 @@ import { TextField, Button, Tabs, Tab, Box } from '@mui/material';
 import { Link } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 
-const Register = () => {
+const Login = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confPassword, setConfPassword] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/register', {
+            const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,17 +22,16 @@ const Register = () => {
             });
 
             if (response.ok) {
-                setMessage('User registered successfully!');
+                setMessage(`Welcome back ${username}`);
                 setUsername('');
                 setEmail('');
                 setPassword('');
-                setConfPassword('');
             } else {
                 const text = await response.text();
                 setMessage(text);
             }
         } catch (error) {
-            setMessage('Error registering user.');
+            setMessage('Error logging in user.');
         }
     };
 
@@ -46,7 +44,7 @@ const Register = () => {
                 alignItems: 'center'
             }}
         >
-            <h2>Register</h2>
+            <h2>Log in</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Box centered="true">
                     <TextField
@@ -87,32 +85,19 @@ const Register = () => {
                         sx={{ marginBottom: 2, minWidth: 500 }}
                     />
                 </Box>
-                <Box centered="true">
-                    <TextField
-                        variant="outlined"
-                        label="Confirm Password"
-                        type="password"
-                        id="confPassword"
-                        value={confPassword}
-                        onChange={(e) => setConfPassword(e.target.value)}
-                        required
-                        inputProps={{ maxLength: 64 }}
-                        sx={{ marginBottom: 2, minWidth: 500 }}
-                    />
-                </Box>
                 <Button
                     type="submit"
                     centered="true"
                     variant="contained"
                     sx={{ marginBottom: 2, minWidth: 500 }}
                 >
-                    Register
+                    Log in
                 </Button>
             </form>
-            <p>Already have an account? <Link to="/Login">Log in</Link></p>
+            <p>Don't have an account? <Link to="/Register">Sign up</Link></p>
             <p>{message}</p>
         </Box>
     );
 };
 
-export default Register;
+export default Login;
