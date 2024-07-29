@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CreatePost from './CreatePost';
@@ -11,6 +11,14 @@ import DetailedPost from './DetailedPost';
 import testImage from './this-horrendous-abomination-has-absolutely-carried-me-v0-m1xnw838tted1.webp';
 
 function App() {
+    const [username, setUsername] = useState(localStorage.getItem('username') || '');
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
     // Example posts data; in a real application, this would come from an API
     const posts = [
         {
@@ -53,9 +61,9 @@ function App() {
 
     ];
 
-    function routeProfile() {
-        return "/Register";
-    }
+    const isLoggedIn = () => {
+        return localStorage.getItem('username') !== null;
+    };
 
     return (
         <Router>
@@ -64,9 +72,12 @@ function App() {
                 <Route path="/" element={<Home posts={posts} />} /> {/* Home route displaying posts */}
                 <Route path="/posts/:postId" element={<DetailedPost posts={posts} />} /> {/* Detailed post view */}
                 <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
-                <Route path={routeProfile()} element={<Register />} /> {/* Route for Register */}
-                <Route path="/Login" element={<Login />} />
-                <Route path="/Profile" element={<Profile posts={posts}/> }/>
+                <Route path="/Register" element={<Register />}/>
+                <Route path="/Login" element={<Login/>}/>
+                <Route
+                    path="/Profile"
+                    element={<Profile posts={posts}/>}
+                />
             </Routes>
             <Footer />
         </Router>

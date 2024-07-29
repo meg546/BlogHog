@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Tabs, Tab, Box } from '@mui/material';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 
 const Login = () => {
@@ -8,6 +8,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,10 +25,10 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                sessionStorage.setItem('username', username);
-                sessionStorage.setItem('email', email);
-                sessionStorage.setItem('password', password);
-                window.location.href = 'http://localhost:3000/Profile';
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                localStorage.setItem('password', password);
+                navigate('/Profile');
             }
             else{
                 setMessage(data.message || 'Login failed');

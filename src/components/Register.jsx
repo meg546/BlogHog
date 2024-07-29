@@ -104,6 +104,7 @@ const Register = () => {
                     type="submit"
                     centered="true"
                     variant="contained"
+                    color="success"
                     sx={{ marginBottom: 2, minWidth: 500 }}
                 >
                     Register
