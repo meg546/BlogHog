@@ -50,6 +50,7 @@ function App() {
                 { author: "User2", time: "25 minutes ago", content: "Thanks for sharing." }
             ]
         },
+
     ];
 
     function routeProfile() {
@@ -65,7 +66,7 @@ function App() {
                 <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
                 <Route path={routeProfile()} element={<Register />} /> {/* Route for Register */}
                 <Route path="/Login" element={<Login />} />
-                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Profile" element={<Profile posts={posts}/> }/>
             </Routes>
             <Footer />
         </Router>

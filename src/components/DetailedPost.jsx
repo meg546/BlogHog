@@ -18,6 +18,7 @@ function DetailedPost({ posts }) {
     const [comments, setComments] = useState(post.comments || []);
     const [newComment, setNewComment] = useState("");
     const [commentsCount, setCommentsCount] = useState(comments.length);
+    const post = posts.find(p => p._id === parseInt(postId, 10));
 
     if (!post) {
         return <div>Post not found</div>;

@@ -12,28 +12,29 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
+        try{
             const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password, confPassword }), // ensure field names match server
-            });
+                body: JSON.stringify({ username, email, password }), // ensure field names match server
+            })
+        
+            const data = await response.json();
 
-            if (response.ok) {
-                setMessage(`Welcome back ${username}`);
-                setUsername('');
-                setEmail('');
-                setPassword('');
-            } else {
-                const text = await response.text();
-                setMessage(text);
+            if (response.ok && data.success) {
+                window.location.href = 'http://localhost:3000/Profile';
             }
-        } catch (error) {
-            setMessage('Error logging in user.');
+            else{
+                setMessage(data.message || 'Login failed');
+            }
         }
-    };
+        catch (error) {
+            console.error('Error:', error);
+            setMessage('An unexpected error occurred, please try again.')
+        }
+    }
 
     return (
         <Box

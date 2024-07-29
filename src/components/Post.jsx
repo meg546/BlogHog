@@ -6,7 +6,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
 
-function Post({ id, author, time, title, reactions, comments }) {
+function Post({ _id, author, time, title, reactions, comments }) {
     const [likeCount, setLikeCount] = useState(reactions);
 
     const handleLike = (e) => {
@@ -27,7 +27,7 @@ function Post({ id, author, time, title, reactions, comments }) {
 
     return (
         <div className="post">
-            <Link to={`/posts/${id}`} className="post-link">
+            <Link to={`/posts/${_id}`} className="post-link">
                 <div className="post-header">
                     <p className="author">{author}</p>
                     <div className="post-time-container">
