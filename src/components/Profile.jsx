@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Box, Grid, Avatar } from '@mui/material';
 import Post from './Post';
 import { Link } from "react-router-dom";
 
 function Profile({ posts }) {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
+    useEffect(() => {
+        const storedUsername = sessionStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+
+        const storedEmail = sessionStorage.getItem('email');
+        if (storedEmail) {
+            setEmail(storedEmail);
+        }
+
+        const storedPassword = sessionStorage.getItem('password');
+        if (storedPassword) {
+            setPassword(storedPassword);
+        }
+    }, []);
+    
     return (
         <Container>
             <Grid container columns={16} p={2} rowGap={4}
@@ -19,7 +39,7 @@ function Profile({ posts }) {
                 sx={{ width: 56, height: 56 }}/>
                 </Grid>
                 <Grid sm={14} alignSelf={'center'}>
-                <h1>@username</h1>
+                <h1>@{username}</h1>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
@@ -30,7 +50,7 @@ function Profile({ posts }) {
                 <Button variant="outlined" display="flex" justifyContent="center" alignItems="center">Reveal</Button>
                 </Grid>
                 <Grid sm={8}>
-                <h2>e****@gmail.com</h2>
+                <h2>{email}</h2>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
@@ -41,7 +61,7 @@ function Profile({ posts }) {
                 <Button variant="outlined" display="flex" justifyContent="center" alignItems="center">Reveal</Button>
                 </Grid>
                 <Grid sm={8}>
-                <h2>p******d</h2>
+                <h2>{password}</h2>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>

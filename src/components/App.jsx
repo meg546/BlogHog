@@ -14,7 +14,7 @@ function App() {
     // Example posts data; in a real application, this would come from an API
     const posts = [
         {
-            id: 1,
+            _id: 1,
             author: "Author 1",
             time: "1 hour ago",
             title: "Post 1",
@@ -27,7 +27,7 @@ function App() {
             ]
         },
         {
-            id: 2,
+            _id: 2,
             author: "Rubickevich",
             time: "2 hours ago",
             title: "This horrendous abomination has absolutely carried me through MV, providing a virtually infinite amount of diesel, polyethylene, solar grade silicon and oxygen + hydrogen.",
@@ -39,7 +39,7 @@ function App() {
             ]
         },
         {
-            id: 3,
+            _id: 3,
             author: "Mtoodles33",
             time: "8 hours ago",
             title: "I finally saw Tenet and genuinely thought it was horrific",

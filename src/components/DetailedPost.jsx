@@ -13,12 +13,11 @@ import { timeAgo } from './utlities';
 
 function DetailedPost({ posts }) {
     const { postId } = useParams();
-    const post = posts.find(p => p.id === parseInt(postId, 10));
+    const post = posts.find(p => p._id === parseInt(postId, 10));
     const [likeCount, setLikeCount] = useState(post.reactions);
     const [comments, setComments] = useState(post.comments || []);
     const [newComment, setNewComment] = useState("");
     const [commentsCount, setCommentsCount] = useState(comments.length);
-    const post = posts.find(p => p._id === parseInt(postId, 10));
 
     if (!post) {
         return <div>Post not found</div>;
@@ -33,7 +32,7 @@ function DetailedPost({ posts }) {
 
     const handleShare = (e) => {
         e.stopPropagation();
-        const postUrl = `${window.location.origin}/posts/${post.id}`;
+        const postUrl = `${window.location.origin}/posts/${post._id}`;
         navigator.clipboard.writeText(postUrl).then(() => {
             alert("Link copied to clipboard!");
         }, (err) => {

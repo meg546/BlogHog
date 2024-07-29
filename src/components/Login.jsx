@@ -18,12 +18,15 @@ const Login = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }), // ensure field names match server
+                body: JSON.stringify({ username, email, password }),
             })
         
             const data = await response.json();
 
             if (response.ok && data.success) {
+                sessionStorage.setItem('username', username);
+                sessionStorage.setItem('email', email);
+                sessionStorage.setItem('password', password);
                 window.location.href = 'http://localhost:3000/Profile';
             }
             else{
