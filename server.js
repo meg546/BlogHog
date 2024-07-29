@@ -17,6 +17,29 @@ mongoose.connect('mongodb://localhost:27017/bloghogDB', {
         useNewUrlParser: true
 });
 
+// Function checks if username passed through Blogpost model exists in User model
+const checkUserExists = async (username) => {
+    const user = await User.findOne({ username });
+    if (user) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const loginUser = async (username, email, password) => {
+    try {
+        const user = await User.findOne({username, email, password});
+        if (user){
+            return user
+        }
+        return null;
+    }
+    catch (err) {
+        console.error('Error logging in1', err)
+    }
+}
+
 
 app.post('/api/register', async (req, res) => {
         const { username, password, confPassword, email } = req.body;
@@ -40,16 +63,6 @@ app.post('/api/register', async (req, res) => {
         }
 });
 
-// Function checks if username passed through Blogpost model exists in User model
-const checkUserExists = async (user) => {
-    const user = await User.findOne({ username });
-    if (user) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
 // Creating blogposts
 app.post('/api/blogposts', async (req, res) => {
     const { author, title, text, tags, published, images } = req.body;
@@ -71,6 +84,23 @@ app.post('/api/blogposts', async (req, res) => {
     } catch (error) {
         res.status(400).send(error.message);
     }
+});
+
+app.post('/api/login', async (req, res) => {
+    const { username, email, password } = req.body;
+    try{
+        const user = await loginUser(username, email, password);
+        if (user) {
+            res.json({ success: true, message: 'Login successful' });
+        }
+        else{
+            res.status(401).json({ success: false, message: 'Invalid username, email, or password' });
+        }
+    }
+    catch (err){
+        console.error('Error logging in', err)
+    }
+
 });
 
 app.listen(port, () => {
