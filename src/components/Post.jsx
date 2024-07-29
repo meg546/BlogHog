@@ -17,7 +17,7 @@ function Post({ _id, author, time, title, reactions, comments }) {
 
     const handleShare = (e) => {
         e.stopPropagation();
-        const postUrl = `${window.location.origin}/posts/${id}`;
+        const postUrl = `${window.location.origin}/posts/${_id}`;
         navigator.clipboard.writeText(postUrl).then(() => {
             alert("Link copied to clipboard!");
         }, (err) => {
@@ -43,7 +43,7 @@ function Post({ _id, author, time, title, reactions, comments }) {
                 <Button className="reaction" onClick={handleLike} startIcon={<ThumbUpOffAltIcon />}>
                     {likeCount}
                 </Button>
-                <Link to={`/posts/${id}`} className="post-link">
+                <Link to={`/posts/${_id}`} className="post-link">
                     <Button className="reaction" startIcon={<ChatBubbleOutlineIcon />}>
                         {comments.length}
                     </Button>
