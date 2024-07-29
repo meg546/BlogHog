@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 
 function DetailedPost({ posts }) {
     const { postId } = useParams();
-    const post = posts.find(p => p.id === parseInt(postId, 10));
+    const post = posts.find(p => p._id === parseInt(postId, 10));
 
     if (!post) {
         return <div>Post not found</div>;
