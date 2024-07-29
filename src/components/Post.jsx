@@ -4,14 +4,25 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
+import Button from '@mui/material/Button';
 
 function Post({ id, author, time, title, reactions, comments }) {
     const [likeCount, setLikeCount] = useState(reactions);
 
     const handleLike = (e) => {
-        e.stopPropagation(); // Prevent navigation on like button click
+        e.stopPropagation();
         setLikeCount(likeCount + 1);
         // Add further logic here (e.g., API call)
+    };
+
+    const handleShare = (e) => {
+        e.stopPropagation();
+        const postUrl = `${window.location.origin}/posts/${id}`;
+        navigator.clipboard.writeText(postUrl).then(() => {
+            alert("Link copied to clipboard!");
+        }, (err) => {
+            console.error('Could not copy text: ', err);
+        });
     };
 
     return (
@@ -26,19 +37,20 @@ function Post({ id, author, time, title, reactions, comments }) {
                 </div>
                 <div className="post-content">
                     <h2>{title}</h2>
-                    {/* Additional content can be handled here */}
                 </div>
             </Link>
             <div className="post-footer">
-                <div className="reaction" onClick={handleLike}>
-                    <ThumbUpOffAltIcon /> {likeCount}
-                </div>
-                <div className="reaction">
-                    <ChatBubbleOutlineIcon /> {comments}
-                </div>
-                <div className="reaction">
-                    <IosShareIcon /> Share
-                </div>
+                <Button className="reaction" onClick={handleLike} startIcon={<ThumbUpOffAltIcon />}>
+                    {likeCount}
+                </Button>
+                <Link to={`/posts/${id}`} className="post-link">
+                    <Button className="reaction" startIcon={<ChatBubbleOutlineIcon />}>
+                        {comments.length}
+                    </Button>
+                </Link>
+                <Button className="reaction" onClick={handleShare} startIcon={<IosShareIcon />}>
+                    Share
+                </Button>
             </div>
         </div>
     );
