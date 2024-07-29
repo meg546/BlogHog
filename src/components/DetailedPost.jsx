@@ -44,17 +44,33 @@ function DetailedPost({ posts }) {
         setNewComment(e.target.value);
     };
 
-    const handleCommentSubmit = () => {
+    const handleCommentSubmit = async () => {
         if (newComment.trim() !== "") {
-            const now = new Date();
-            const newCommentObject = {
-                author: "Current User", // Replace with actual user data
-                time: now.toISOString(), 
-                content: newComment,
-            };
-            setComments([...comments, newCommentObject]);
-            setCommentsCount(commentsCount + 1);
-            setNewComment("");
+            try {
+                const response = await fetch(`http://localhost:5000/api/blogposts/${(postId)}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        author: "defaultUser",  // default author for now
+                        text: newComment,
+                    }),
+                });
+    
+                if (response.ok) {
+                    const newCommentObject = await response.json();
+                    setComments([...comments, newCommentObject]);
+                    setNewComment("");
+                } else {
+                    const errorText = await response.text(); // Read the response body
+                    console.error('Error adding comment', errorText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else {
+            console.warn('Cannot submit an empty comment.');
         }
     };
 

@@ -103,6 +103,31 @@ app.post('/api/login', async (req, res) => {
 
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+app.post('/api/blogposts/:postId/comments', async (req, res) => {
+    const { postId } = req.params;
+    const { user, text } = req.body;
+
+    if (!user || !text) {
+        return res.status(400).send('User and text are required');
+    }
+
+    try {
+        const post = await Blogpost.findById(postId);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        const newComment = {
+            user,
+            text,
+            date: new Date() // Automatically set the current date
+        };
+
+        post.comments.push(newComment);
+        await post.save();
+
+        res.status(201).json(newComment);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
