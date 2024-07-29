@@ -6,8 +6,8 @@ function Home({ posts }) {
         <div className="home">
             {posts.map(post => (
                 <Post 
-                    key={post.id}
-                    id={post.id} 
+                    key={post._id}
+                    _id={post._id}
                     author={post.author} 
                     time={post.time} 
                     title={post.title} 
