@@ -40,7 +40,6 @@ const loginUser = async (username, email, password) => {
     }
 }
 
-
 app.post('/api/register', async (req, res) => {
         const { username, password, confPassword, email } = req.body;
         const likes = [];
@@ -63,25 +62,73 @@ app.post('/api/register', async (req, res) => {
         }
 });
 
+app.get('/api/blogposts', async (req, res) => {
+    try {
+        const posts = await Blogpost.find({});
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/api/blogposts/:id', async (req, res) => {
+    try {
+        const post = await Blogpost.findById(req.params.id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+        res.status(200).json(post);
+    } catch (error) {
+        console.error('Error fetching post:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // Creating blogposts
 app.post('/api/blogposts', async (req, res) => {
-    const { author, title, text, tags, published, images } = req.body;
-    var route = '';
-    var time = '';
-    const comments = [];
-    const likes = 0;
+    const { author, title, content, published } = req.body;
+
+    console.log('Received data:', req.body);
+
+    // Validate incoming data
+    if (!author || !title || !content) {
+        console.error('Validation error: Missing required fields');
+        return res.status(400).send('Author, title, and content are required.');
+    }
+
+    
+    let route = title.toLowerCase().split(' ').join('-'); 
+    const time = new Date();
+
+    let existingPost = await Blogpost.findOne({ route });
+    if (existingPost) {
+        route = `${route}-${Date.now()}`;
+    }
 
     // Validate the author
     const authorExists = await checkUserExists(author);
     if (!authorExists) {
+        console.error('Author does not exist');
         return res.status(400).send('Author does not exist.');
     }
 
     try {
-        const newBlogpost = new Blogpost({ author, title, time, route, text, tags, published, images, comments, likes});
+        const newBlogpost = new Blogpost({
+            author,
+            title,
+            content,
+            published: published === 'true',
+            route,
+            time,
+            comments: [],
+            likes: 0
+        });
         await newBlogpost.save();
+        console.log('Blogpost created:', newBlogpost);
         res.status(201).json(newBlogpost);
     } catch (error) {
+        console.error('Error saving blog post:', error.message);
         res.status(400).send(error.message);
     }
 });
@@ -101,6 +148,36 @@ app.post('/api/login', async (req, res) => {
         console.error('Error logging in', err)
     }
 
+});
+
+app.post('/api/blogposts/:id/comments', async (req, res) => {
+    const { id } = req.params;
+    const { author, text } = req.body;
+
+    if (!author || !text) {
+        return res.status(400).send('User and text are required');
+    }
+
+    try {
+        const post = await Blogpost.findById(id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        const newComment = {
+            user: author,
+            text: text,
+            date: new Date(),
+        };
+
+        post.comments.push(newComment);
+        await post.save();
+
+        res.status(201).json(newComment);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 app.listen(port, () => {

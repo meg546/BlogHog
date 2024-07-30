@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Tabs, Tab, Box } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { styled } from '@mui/material/styles';
@@ -12,6 +12,15 @@ function CreatePost() {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [username, setUsername] = useState('')
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -20,6 +29,49 @@ function CreatePost() {
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
       };
+
+      const handleSubmit = async () => {
+        setSuccessMessage(''); // Reset message on new submission
+    
+        // Frontend validation
+        if (!title || !body) {
+            console.error('Title and content are required.');
+            setSuccessMessage('Title and content are required.');
+            return;
+        }
+    
+        // Prepare the request payload
+        const postData = {
+            author: username,
+            title,
+            content: body,
+            published: true, // Assuming published is always true in this case
+        };
+    
+        console.log('Post Data:', postData);
+    
+        try {
+            const response = await fetch('http://localhost:5000/api/blogposts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postData),
+            });
+    
+            if (response.ok) {
+                setSuccessMessage('Post created successfully!');
+                setTitle('');
+                setBody('');
+            } else {
+                const errorText = await response.text();
+                console.error('Error creating post:', response.statusText);
+                console.error('Server response:', errorText); // Log detailed error message
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -33,24 +85,28 @@ function CreatePost() {
             <Box sx={{ padding: 2 }}>
                 {selectedTab === 0 && (
                     <Box>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            label="Title"
-                            required
-                            inputProps={{ maxLength: 300 }}
-                            sx={{ marginBottom: 2 }}
-                        />
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            label="Body"
-                            multiline
-                            rows={6}
-                            sx={{ marginBottom: 2 }}
-                        />
-                        <Button variant="contained" color="primary">Post</Button>
-                    </Box>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Title"
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        inputProps={{ maxLength: 300 }}
+                        sx={{ marginBottom: 2 }}
+                    />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Body"
+                        multiline
+                        rows={6}
+                        value={body}
+                        onChange={(e) => setBody(e.target.value)}
+                        sx={{ marginBottom: 2 }}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleSubmit}>Post</Button>
+                </Box>
                 )}
                 {selectedTab === 1 && (
                     <Box>
@@ -74,7 +130,7 @@ function CreatePost() {
                             <p>{selectedFile.name}</p>
                         </Box>
                         )}
-                        <Button variant="contained" color="primary">Post</Button>
+                        <Button variant="contained" color="primary" onClick={handleSubmit}>Post</Button>
                     </Box>
                 )}
             </Box>
