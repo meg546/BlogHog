@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Post from './Post';
-import timeAgo from './utlities'
+import {timeAgo} from './utilities';
 
 function Home() {
     const [posts, setPosts] = useState([]);
@@ -12,7 +12,9 @@ function Home() {
                 const response = await fetch('http://localhost:5000/api/blogposts');
                 if (response.ok) {
                     const data = await response.json();
-                    setPosts(data);
+                    // Sort posts by time in descending order
+                    const sortedPosts = data.sort((a, b) => new Date(b.time) - new Date(a.time));
+                    setPosts(sortedPosts);
                 } else {
                     console.error('Failed to fetch posts:', response.statusText);
                 }
@@ -33,7 +35,7 @@ function Home() {
                     author={post.author} 
                     time={timeAgo(post.time)}
                     title={post.title} 
-                    reactions={post.reactions} 
+                    reactions={post.likes} 
                     comments={post.comments} 
                 />
             ))}

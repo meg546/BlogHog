@@ -180,6 +180,25 @@ app.post('/api/blogposts/:id/comments', async (req, res) => {
     }
 });
 
+app.post('/api/blogposts/:id/like', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const post = await Blogpost.findById(id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        post.likes += 1;
+        await post.save();
+
+        res.status(200).json({ likes: post.likes });
+    } catch (error) {
+        console.error('Error updating likes:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });

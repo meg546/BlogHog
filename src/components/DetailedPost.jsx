@@ -11,7 +11,6 @@ import { timeAgo } from './utilities';
 
 function DetailedPost() {
     const { _id } = useParams();
-    const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [likeCount, setLikeCount] = useState(0);
     const [comments, setComments] = useState([]);
@@ -37,7 +36,7 @@ function DetailedPost() {
                     if (response.ok) {
                         const data = await response.json();
                         setPost(data);
-                        setLikeCount(data.reactions || 0);
+                        setLikeCount(data.likes || 0);
                         setComments(data.comments || []);
                     } else {
                         setError('Post not found');
@@ -56,11 +55,24 @@ function DetailedPost() {
         }
     }, [_id]);
     
-    const handleLike = (e) => {
+    const handleLike = async (e) => {
         e.stopPropagation();
-        setLikeCount(likeCount + 1);
-    
+        try {
+            const response = await fetch(`http://localhost:5000/api/blogposts/${_id}/like`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setLikeCount(data.likes);
+            } else {
+                console.error('Error updating likes');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
 
     const handleShare = (e) => {
         e.stopPropagation();
@@ -72,10 +84,6 @@ function DetailedPost() {
         });
     };
 
-    const handleCommentChange = (e) => {
-        setNewComment(e.target.value);
-    };
-
     const handleCommentSubmit = async () => {
         if (newComment.trim() !== "" && username.trim() !== "") {
             try {
@@ -85,7 +93,7 @@ function DetailedPost() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        author: username,  // Include the username from localStorage
+                        author: username, 
                         text: newComment,
                     }),
                 });
