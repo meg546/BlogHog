@@ -4,6 +4,7 @@ import Post from './Post';
 import { Link } from "react-router-dom";
 import { capitalize } from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import Home from './Home';
 
 function Profile({ posts }) {
     const [username, setUsername] = useState('');
@@ -71,9 +72,6 @@ function Profile({ posts }) {
         localStorage.clear();
         navigate('/Login');
     };
-
-    // Helper function to mask email and password
-    const maskString = (str) => str.split('').map(() => '*').join('');
 
     return (
         <Container>
@@ -144,19 +142,7 @@ function Profile({ posts }) {
                 <Grid sm={2}>
                 </Grid>
             </Grid>
-            <div className="home">
-            {posts.map(post => (
-                <Post 
-                    key={post._id}
-                    _id={post._id} 
-                    author={post.author} 
-                    time={post.time} 
-                    title={post.title} 
-                    reactions={post.reactions} 
-                    comments={post.comments} 
-                />
-            ))}
-            </div>
+            <Home/>
         </Container>
     )
 };
