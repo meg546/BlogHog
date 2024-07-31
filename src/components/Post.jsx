@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
@@ -6,13 +6,29 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
 
-function Post({ _id, author, time, title, reactions, comments }) {
-    const [likeCount, setLikeCount] = useState(reactions);
+function Post({ _id, author, time, title, reactions, comments = [] }) {
+    const [likeCount, setLikeCount] = useState(0);
 
-    const handleLike = (e) => {
+    useEffect(() => {
+        setLikeCount(reactions);
+    }, [reactions]);
+
+    const handleLike = async (e) => {
         e.stopPropagation();
-        setLikeCount(likeCount + 1);
-        // Add further logic here (e.g., API call)
+        try {
+            const response = await fetch(`http://localhost:5000/api/blogposts/${_id}/like`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setLikeCount(data.likes || 0);
+            } else {
+                console.error('Error updating likes');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     const handleShare = (e) => {
@@ -40,9 +56,9 @@ function Post({ _id, author, time, title, reactions, comments }) {
                 </div>
             </Link>
             <div className="post-footer">
-                <Button className="reaction" onClick={handleLike} startIcon={<ThumbUpOffAltIcon />}>
-                    {likeCount}
-                </Button>
+                <Button className="reaction" onClick={handleLike}>
+                        <ThumbUpOffAltIcon /> {likeCount}
+                    </Button>
                 <Link to={`/posts/${_id}`} className="post-link">
                     <Button className="reaction" startIcon={<ChatBubbleOutlineIcon />}>
                         {comments.length}
