@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
@@ -7,32 +7,64 @@ import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
 import CommentComponent from './CommentComponent';
 import TextField from '@mui/material/TextField';
-import { timeAgo } from './utlities';
+import { timeAgo } from './utilities';
 
-
-
-function DetailedPost({ posts }) {
+function DetailedPost() {
+    const { _id } = useParams();
     const { postId } = useParams();
-    const post = posts.find(p => p._id === parseInt(postId, 10));
-    const [likeCount, setLikeCount] = useState(post.reactions);
-    const [comments, setComments] = useState(post.comments || []);
+    const [post, setPost] = useState(null);
+    const [likeCount, setLikeCount] = useState(0);
+    const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
-    const [commentsCount, setCommentsCount] = useState(comments.length);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [username, setUsername] = useState('')
 
-    if (!post) {
-        return <div>Post not found</div>;
-    }
+    // Fetch the username from localStorage
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
 
-    const isImageUrl = (url) => /\.(jpeg|jpg|gif|png|webp)$/.test(url);
+    // Fetch post data from the API, including comments
+    useEffect(() => {
+        if (_id) {
+            const fetchPost = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/blogposts/${_id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setPost(data);
+                        setLikeCount(data.reactions || 0);
+                        setComments(data.comments || []);
+                    } else {
+                        setError('Post not found');
+                    }
+                } catch (error) {
+                    setError('Error fetching post');
+                } finally {
+                    setLoading(false);
+                }
+            };
 
+            fetchPost();
+        } else {
+            setError('Invalid post ID');
+            setLoading(false);
+        }
+    }, [_id]);
+    
     const handleLike = (e) => {
         e.stopPropagation();
         setLikeCount(likeCount + 1);
+    
     };
 
     const handleShare = (e) => {
         e.stopPropagation();
-        const postUrl = `${window.location.origin}/posts/${post._id}`;
+        const postUrl = `${window.location.origin}/posts/${_id}`;
         navigator.clipboard.writeText(postUrl).then(() => {
             alert("Link copied to clipboard!");
         }, (err) => {
@@ -44,19 +76,49 @@ function DetailedPost({ posts }) {
         setNewComment(e.target.value);
     };
 
-    const handleCommentSubmit = () => {
-        if (newComment.trim() !== "") {
-            const now = new Date();
-            const newCommentObject = {
-                author: "Current User", // Replace with actual user data
-                time: now.toISOString(), 
-                content: newComment,
-            };
-            setComments([...comments, newCommentObject]);
-            setCommentsCount(commentsCount + 1);
-            setNewComment("");
+    const handleCommentSubmit = async () => {
+        if (newComment.trim() !== "" && username.trim() !== "") {
+            try {
+                const response = await fetch(`http://localhost:5000/api/blogposts/${_id}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        author: username,  // Include the username from localStorage
+                        text: newComment,
+                    }),
+                });
+
+                if (response.ok) {
+                    const newCommentObject = await response.json();
+                    setComments([...comments, newCommentObject]);
+                    setNewComment("");
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error adding comment:', errorText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else {
+            console.warn('Username and comment text are required.');
         }
     };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
+    if (!post) {
+        return <div>Post not found</div>;
+    }
+
+    const isImageUrl = (url) => /\.(jpeg|jpg|gif|png|webp)$/.test(url);
 
     return (
         <div className="detailed-post">
@@ -64,7 +126,7 @@ function DetailedPost({ posts }) {
                 <div className="post-header">
                     <p className="author">{post.author}</p>
                     <div className="post-time-container">
-                        <p className="post-time">{post.time}</p>
+                        <p className="post-time">{timeAgo(post.time)}</p>
                         <MoreHorizIcon />
                     </div>
                 </div>
@@ -81,7 +143,7 @@ function DetailedPost({ posts }) {
                         <ThumbUpOffAltIcon /> {likeCount}
                     </Button>
                     <Button className="reaction">
-                        <ChatBubbleOutlineIcon /> {post.comments.length}
+                        <ChatBubbleOutlineIcon /> {comments.length}
                     </Button>
                     <Button className="reaction" onClick={handleShare}>
                         <IosShareIcon /> Share
@@ -89,6 +151,7 @@ function DetailedPost({ posts }) {
                 </div>
             </div>
             <div className="comments-section">
+                <h3>Comments</h3>
                 <div className="text-field-container">
                     <TextField
                         id="fullWidth"
@@ -96,18 +159,31 @@ function DetailedPost({ posts }) {
                         variant="standard"
                         fullWidth
                         value={newComment}
-                        onChange={handleCommentChange}
+                        onChange={(e) => setNewComment(e.target.value)}
                     />
                     <Button onClick={handleCommentSubmit} variant="text" color="primary" className="submit-button">
                         Submit
                     </Button>
                 </div>
-                {comments.map((comment, index) => (
-                    <CommentComponent key={index} {...comment} time={timeAgo(comment.time)} />
-                ))}
+                {comments.length === 0 ? (
+                    <p>No comments yet. Be the first to comment!</p>
+                ) : (
+                    comments.map((comment, index) => (
+                        <div key={index} className="comment">
+                            <div className="comment-header">
+                                <strong>{comment.user}</strong>
+                                <span className="comment-time">{timeAgo(comment.date)}</span>
+                            </div>
+                            <div className="comment-content">
+                                <p>{comment.text}</p>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
 }
+
 
 export default DetailedPost;
