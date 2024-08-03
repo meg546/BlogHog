@@ -31,24 +31,22 @@ function CreatePost() {
       };
 
       const handleSubmit = async () => {
-        setSuccessMessage(''); // Reset message on new submission
+        setSuccessMessage('');
     
-        // Frontend validation
         if (!title || !body) {
             console.error('Title and content are required.');
             setSuccessMessage('Title and content are required.');
             return;
         }
     
-        // Prepare the request payload
         const postData = {
             author: username,
             title,
             content: body,
-            published: true, // Assuming published is always true in this case
+            published: true,
         };
     
-        console.log('Post Data:', postData);
+        console.log('Post Data: ', postData);
     
         try {
             const response = await fetch('http://localhost:5000/api/blogposts', {
@@ -66,7 +64,7 @@ function CreatePost() {
             } else {
                 const errorText = await response.text();
                 console.error('Error creating post:', response.statusText);
-                console.error('Server response:', errorText); // Log detailed error message
+                console.error('Server response:', errorText);
             }
         } catch (error) {
             console.error('Error:', error);

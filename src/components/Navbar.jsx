@@ -6,7 +6,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { Input, InputAdornment, useTheme } from '@mui/material';
 
-function Navbar() {
+function Navbar({setSearchTerms}) {
+    const handleSearchChange = (e) => {
+        setSearchTerms(e.target.value);
+    };
+
     const theme = useTheme();
     const navigate = useNavigate();
     const isLoggedIn = () => localStorage.getItem('username') != null;
@@ -21,6 +25,15 @@ function Navbar() {
         }
     };
 
+    const handleSearchSubmit = (e) => {
+        if (e.key == 'Enter' || e.type == 'click') {
+            if (searchTerms.trim()) {
+                console.log("test1")
+            }
+        }
+    };
+
+
     return (
         <header className="nav-header">
             <div className="nav-container">
@@ -32,12 +45,20 @@ function Navbar() {
                 </h1>
                 <Input
                     placeholder="Search here…"
+                    value={searchTerms}
+                    onChange={handleSearchChange}
+                    onKeyDown={handleSearchSubmit}
                     startAdornment={
                         <InputAdornment position="start">
                             <SearchIcon />
                         </InputAdornment>
                     }
                 />
+                <Button
+                    onClick={handleSearchSubmit}
+                >
+                    <SearchIcon />
+                </Button>
                 <div className="button-container">
                     <Button 
                         variant="contained" 
