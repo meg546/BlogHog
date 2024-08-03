@@ -1,75 +1,65 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useState, useEffect} from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import SavingsIcon from '@mui/icons-material/Savings';
 import Button from '@mui/material/Button';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SearchIcon from '@mui/icons-material/Search';
+import { Input, InputAdornment, useTheme } from '@mui/material';
 
 function Navbar() {
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const isLoggedIn = () => localStorage.getItem('username') != null;
+
+    const handleProfileClick = () => {
+        if (isLoggedIn()) {
+            console.log('hi1');
+            navigate('/Profile');
+        } else {
+            console.log('hi2');
+            navigate('/Login');
+        }
+    };
+
     return (
-        <header style={headerStyle}>
-            <div style={navContainerStyle}>
-                <h1 style={brandStyle}>
-                    <Link to="/" style={logoLinkStyle}>
-                    <SavingsIcon />
-                    BlogHog
+        <header className="nav-header">
+            <div className="nav-container">
+                <h1 className="brand">
+                    <Link to="/" className="logo-link" style={{ color: theme.palette.primary.main }}>
+                        <SavingsIcon color='primary' />
+                        BlogHog
                     </Link>
                 </h1>
-                <div style={buttonContainerStyle}>
+                <Input
+                    placeholder="Search here…"
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    }
+                />
+                <div className="button-container">
                     <Button 
                         variant="contained" 
                         color="primary" 
                         component={Link} 
                         to="/CreatePost"
-                        style={buttonStyle}
+                        className="button"
                     >
                         Create
                     </Button>
                     <Button                    
                         variant="contained" 
                         color="primary" 
-                        component={Link} 
-                        to="/Profile"
-                        style={buttonStyle}
+                        onClick={handleProfileClick}
+                        className="button"
                     >
-                        Profile
+                        <AccountCircleIcon/>
                     </Button>
                 </div>
             </div>
         </header>
     );
 }
-
-const headerStyle = {
-    borderBottom: '1px solid #e0e0e0',
-    paddingBottom: '10px',
-    width: '99%',
-    margin: '0 auto',
-};
-
-const navContainerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-};
-
-const brandStyle = {
-    display: 'flex',
-    alignItems: 'center',
-};
-
-const buttonContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-};
-
-const buttonStyle = {
-};
-
-const logoLinkStyle = {
-    textDecoration: 'none',
-    color: 'inherit', // Keeps the logo's color consistent
-    display: 'flex',
-    alignItems: 'center',
-};
 
 export default Navbar;
