@@ -12,6 +12,7 @@ import testImage from './this-horrendous-abomination-has-absolutely-carried-me-v
 
 function App() {
     const [username, setUsername] = useState(localStorage.getItem('username') || '');
+    const [searchTerms, setSearchTerms] = useState('');
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -20,23 +21,16 @@ function App() {
         }
     }, []);
 
-    const isLoggedIn = () => {
-        return localStorage.getItem('username') !== null;
-    };
-
     return (
         <Router>
-            <Navbar />
+            <Navbar setSearchTerms={setSearchTerms} />
             <Routes>
-                <Route path="/" element={<Home/>} /> {/* Home route displaying posts */}
-                <Route path="/posts/:_id" element={<DetailedPost/>} /> {/* Detailed post view */}
-                <Route path="/CreatePost" element={<CreatePost />} /> {/* Route for CreatePost */}
+                <Route path="/" element={<Home searchTerms={searchTerms} />} />
+                <Route path="/posts/:_id" element={<DetailedPost/>} />
+                <Route path="/CreatePost" element={<CreatePost />} />
                 <Route path="/Register" element={<Register />}/>
                 <Route path="/Login" element={<Login/>}/>
-                <Route
-                    path="/Profile"
-                    element={<Profile/>}
-                />
+                <Route path="/Profile" element={<Profile/>}/>
             </Routes>
             <Footer />
         </Router>

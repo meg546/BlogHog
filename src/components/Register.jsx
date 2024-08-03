@@ -19,7 +19,7 @@ const Register = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password, confPassword }), // ensure field names match server
+                body: JSON.stringify({ username, email, password, confPassword }),
             });
 
             if (response.ok) {

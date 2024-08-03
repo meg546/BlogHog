@@ -19,3 +19,5 @@ export function timeAgo(date) {
     }
     return `${Math.floor(secondsPast / 31536000)} years ago`;
 }
+
+export default timeAgo;

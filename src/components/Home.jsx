@@ -6,13 +6,14 @@ function Home() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        // Function to fetch posts from the API
+
+        
         const fetchPosts = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/blogposts');
                 if (response.ok) {
                     const data = await response.json();
-                    // Sort posts by time in descending order
+
                     const sortedPosts = data.sort((a, b) => new Date(b.time) - new Date(a.time));
                     setPosts(sortedPosts);
                 } else {
@@ -24,7 +25,14 @@ function Home() {
         };
 
         fetchPosts();
-    }, []); // Empty dependency array ensures this runs once on component mount
+    }, []);
+
+    const filteredPosts = posts.filter(post => 
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     return (
         <div className="home">

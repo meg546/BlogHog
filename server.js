@@ -9,7 +9,6 @@ const app = express();
 const port = 5000;
 
 app.use(cors());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -19,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/bloghogDB', {
 
 // Function checks if username passed through Blogpost model exists in User model
 const checkUserExists = async (username) => {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({username});
     if (user) {
         return true;
     } else {
@@ -27,6 +26,7 @@ const checkUserExists = async (username) => {
     }
 };
 
+// Function to log a user in
 const loginUser = async (username, email, password) => {
     try {
         const user = await User.findOne({username, email, password});
@@ -40,28 +40,30 @@ const loginUser = async (username, email, password) => {
     }
 }
 
+// Endpoint for user registration
 app.post('/api/register', async (req, res) => {
         const { username, password, confPassword, email } = req.body;
         const likes = [];
         const posts = [];
 
         if (!username || !password || !confPassword || !email) {
-                return res.status(400).send('Please fill all fields.');
+                return res.send('Please fill all fields.');
         }
         if (password !== confPassword) {
-                return res.status(400).send('Passwords do not match.');
+                return res.send('Passwords do not match.');
         }
         
         try {
-            const newUser = new User({ username, password, email, likes, posts });
+            const newUser = new User({username, password, email, likes, posts});
             await newUser.save();
-            res.status(201).send('User registered successfully.');
+            res.send('User registered successfully!');
         } catch (error) {
-            console.error('Error during user registration:', error);
-            res.status(500).send('Error registering user.');
+            console.error('Error during user registration: ', error);
+            res.send('Error registering user.');
         }
 });
 
+//Endpoint for finding blogposts
 app.get('/api/blogposts', async (req, res) => {
     try {
         const posts = await Blogpost.find({});
@@ -72,29 +74,29 @@ app.get('/api/blogposts', async (req, res) => {
     }
 });
 
+//Endpoint for finding single blogpost by id
 app.get('/api/blogposts/:id', async (req, res) => {
     try {
         const post = await Blogpost.findById(req.params.id);
         if (!post) {
-            return res.status(404).send('Post not found');
+            return res.send('Post not found');
         }
-        res.status(200).json(post);
+        res.json(post);
     } catch (error) {
-        console.error('Error fetching post:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching post: ', error);
+        res.send('Internal Server Error');
     }
 });
 
-// Creating blogposts
+// Endpoint for creating blogposts
 app.post('/api/blogposts', async (req, res) => {
-    const { author, title, content, published } = req.body;
+    const {author, title, content, published } = req.body;
 
     console.log('Received data:', req.body);
 
-    // Validate incoming data
     if (!author || !title || !content) {
         console.error('Validation error: Missing required fields');
-        return res.status(400).send('Author, title, and content are required.');
+        return res.send('Author, title, and content are required.');
     }
 
     
@@ -106,11 +108,11 @@ app.post('/api/blogposts', async (req, res) => {
         route = `${route}-${Date.now()}`;
     }
 
-    // Validate the author
+    // Function for validating author
     const authorExists = await checkUserExists(author);
     if (!authorExists) {
         console.error('Author does not exist');
-        return res.status(400).send('Author does not exist.');
+        return res.send(error);
     }
 
     try {
@@ -129,19 +131,20 @@ app.post('/api/blogposts', async (req, res) => {
         res.status(201).json(newBlogpost);
     } catch (error) {
         console.error('Error saving blog post:', error.message);
-        res.status(400).send(error.message);
+        res.send(error.message);
     }
 });
 
+//Endpoint for logging in to the website
 app.post('/api/login', async (req, res) => {
     const { username, email, password } = req.body;
     try{
         const user = await loginUser(username, email, password);
         if (user) {
-            res.json({ success: true, message: 'Login successful' });
+            res.json({success: true, message: 'Login successful!' });
         }
         else{
-            res.status(401).json({ success: false, message: 'Invalid username, email, or password' });
+            res.json({ success: false, message: 'Invalid username, email, or password.' });
         }
     }
     catch (err){
@@ -150,18 +153,19 @@ app.post('/api/login', async (req, res) => {
 
 });
 
+//Endpoint for creating a post comment
 app.post('/api/blogposts/:id/comments', async (req, res) => {
-    const { id } = req.params;
-    const { author, text } = req.body;
+    const { id} = req.params;
+    const {author, text } = req.body;
 
     if (!author || !text) {
-        return res.status(400).send('User and text are required');
+        return res.status(400).send('Author and text content not found');
     }
 
     try {
         const post = await Blogpost.findById(id);
         if (!post) {
-            return res.status(404).send('Post not found');
+            return res.send('Post not found');
         }
 
         const newComment = {
@@ -173,29 +177,30 @@ app.post('/api/blogposts/:id/comments', async (req, res) => {
         post.comments.push(newComment);
         await post.save();
 
-        res.status(201).json(newComment);
+        res.json(newComment);
     } catch (error) {
-        console.error('Error adding comment:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error adding comment: ', error);
+        res.send('Internal Server Error');
     }
 });
 
+//Endpoint for adding a like to a post
 app.post('/api/blogposts/:id/like', async (req, res) => {
-    const { id } = req.params;
+    const {id } = req.params;
 
     try {
         const post = await Blogpost.findById(id);
         if (!post) {
-            return res.status(404).send('Post not found');
+            return res.send('Post not found');
         }
 
         post.likes += 1;
         await post.save();
 
-        res.status(200).json({ likes: post.likes });
+        res.json({ likes: post.likes });
     } catch (error) {
-        console.error('Error updating likes:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error updating likes: ', error);
+        res.send('Internal Server Error');
     }
 });
 
