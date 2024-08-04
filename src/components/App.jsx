@@ -8,7 +8,6 @@ import Home from './Home';
 import Login from './Login';
 import Profile from './Profile';
 import DetailedPost from './DetailedPost';
-import testImage from './this-horrendous-abomination-has-absolutely-carried-me-v0-m1xnw838tted1.webp';
 
 function App() {
     const [username, setUsername] = useState(localStorage.getItem('username') || '');
