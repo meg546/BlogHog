@@ -4,8 +4,13 @@ import {timeAgo} from './utilities';
 
 function Home({searchTerms}) {
     const [posts, setPosts] = useState([]);
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
 
 
         const fetchPosts = async () => {
@@ -40,11 +45,11 @@ function Home({searchTerms}) {
                 <Post 
                     key={post._id}
                     _id={post._id}
-                    author={post.author} 
+                    author={post.author == username} 
                     time={timeAgo(post.time)}
-                    title={post.title} 
-                    reactions={post.likes} 
-                    comments={post.comments} 
+                    title={post.title}
+                    reactions={post.likes}
+                    comments={post.comments}
                 />
             ))}
         </div>

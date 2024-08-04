@@ -4,9 +4,9 @@ import Post from './Post';
 import { Link } from "react-router-dom";
 import { capitalize } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import Home from './Home';
+import ProfileHome from './ProfileHome';
 
-function Profile({ posts }) {
+function Profile({searchTerms}) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -142,7 +142,7 @@ function Profile({ posts }) {
                 <Grid sm={2}>
                 </Grid>
             </Grid>
-            <Home/>
+            <ProfileHome searchTerms={searchTerms}/>
         </Container>
     )
 };

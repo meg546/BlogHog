@@ -25,14 +25,6 @@ function Navbar({setSearchTerms}) {
         }
     };
 
-    const handleSearchSubmit = (e) => {
-        if (e.key == 'Enter' || e.type == 'click') {
-            if (searchTerms.trim()) {
-                console.log("test1")
-            }
-        }
-    };
-
 
     return (
         <header className="nav-header">
@@ -45,28 +37,20 @@ function Navbar({setSearchTerms}) {
                 </h1>
                 <Input
                     placeholder="Search here…"
-                    value={searchTerms}
                     onChange={handleSearchChange}
-                    onKeyDown={handleSearchSubmit}
                     startAdornment={
                         <InputAdornment position="start">
                             <SearchIcon />
                         </InputAdornment>
                     }
                 />
-                <Button
-                    onClick={handleSearchSubmit}
-                >
-                    <SearchIcon />
-                </Button>
                 <div className="button-container">
                     <Button 
                         variant="contained" 
                         color="primary" 
                         component={Link} 
                         to="/CreatePost"
-                        className="button"
-                    >
+                        className="button">
                         Create
                     </Button>
                     <Button                    
