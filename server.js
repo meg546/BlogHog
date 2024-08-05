@@ -74,17 +74,28 @@ app.get('/api/blogposts', async (req, res) => {
     }
 });
 
-//Endpoint for finding single blogpost by id
 app.get('/api/blogposts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.query;
+
     try {
-        const post = await Blogpost.findById(req.params.id);
+        const post = await Blogpost.findById(id);
         if (!post) {
-            return res.send('Post not found');
+            return res.status(404).send('Post not found');
         }
-        res.json(post);
+
+        let userLiked = false;
+        if (userId) {
+            const user = await User.findOne({ username: userId });
+            if (user) {
+                userLiked = user.likes.some(like => like._blogid === id);
+            }
+        }
+
+        res.json({ ...post.toObject(), userLiked });
     } catch (error) {
-        console.error('Error fetching post: ', error);
-        res.send('Internal Server Error');
+        console.error('Error fetching post:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
@@ -184,23 +195,40 @@ app.post('/api/blogposts/:id/comments', async (req, res) => {
     }
 });
 
-//Endpoint for adding a like to a post
 app.post('/api/blogposts/:id/like', async (req, res) => {
-    const {id } = req.params;
+    const { id } = req.params;
+    const { userId } = req.body;
 
     try {
         const post = await Blogpost.findById(id);
         if (!post) {
-            return res.send('Post not found');
+            return res.status(404).send('Post not found');
         }
 
-        post.likes += 1;
-        await post.save();
+        const user = await User.findOne({ username: userId });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-        res.json({ likes: post.likes });
+        const alreadyLikedIndex = user.likes.findIndex(like => like._blogid === id);
+        if (alreadyLikedIndex !== -1) {
+            // Unlike the post
+            post.likes -= 1;
+            user.likes.splice(alreadyLikedIndex, 1);
+            await post.save();
+            await user.save();
+            return res.json({ likes: post.likes, userLiked: false });
+        } else {
+            // Like the post
+            post.likes += 1;
+            user.likes.push({ _blogid: id });
+            await post.save();
+            await user.save();
+            return res.json({ likes: post.likes, userLiked: true });
+        }
     } catch (error) {
-        console.error('Error updating likes: ', error);
-        res.send('Internal Server Error');
+        console.error('Error updating likes:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
