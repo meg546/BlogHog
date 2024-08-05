@@ -33,13 +33,13 @@ function Home({searchTerms, filter}) {
         } else if (filter == 'AUTHOR') {
             return post.author && post.author.toLowerCase().includes(searchTerms.toLowerCase());
         } else if (filter == 'CONTENT') {
-            return post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase());
+            return post.content && post.content.toLowerCase().includes(searchTerms.toLowerCase());
         } else if (filter == 'TAGS') {
             return post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()));
         } else {
             return (post.title && post.title.toLowerCase().includes(searchTerms.toLowerCase())) ||
                    (post.author && post.author.toLowerCase().includes(searchTerms.toLowerCase())) ||
-                   (post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                   (post.content && post.content.toLowerCase().includes(searchTerms.toLowerCase())) ||
                    (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase())));
         }
     };

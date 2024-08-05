@@ -39,14 +39,14 @@ function ProfileHome({searchTerms, filter}) {
         } else if (filter == 'AUTHOR') {
             return post.author === username && post.author.toLowerCase().includes(searchTerms.toLowerCase());
         } else if (filter == 'CONTENT') {
-            return post.author === username && post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase());
+            return post.author === username && post.content && post.content.toLowerCase().includes(searchTerms.toLowerCase());
         } else if (filter == 'TAGS') {
             return post.author === username && post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()));
         } else {
             return  (post.author === username) && 
-                    (post.title && post.title.toLowerCase().includes(searchTerms.toLowerCase())) ||
-                    (post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase())) ||
-                    (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase())));
+                    ((post.title && post.title.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                    (post.content && post.content.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                    (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()))));
         }
     };
 

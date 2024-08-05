@@ -4,10 +4,11 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
+import Check from '@mui/icons-material/Check';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import TuneIcon from '@mui/icons-material/Tune';
-import { Input, InputAdornment, useTheme, Divider } from '@mui/material';
+import { Input, InputAdornment, useTheme, Divider} from '@mui/material';
 
 function Navbar({setSearchTerms, setFilter}) {
     const handleSearchChange = (e) => {
@@ -15,24 +16,30 @@ function Navbar({setSearchTerms, setFilter}) {
     };
     const handleFilterAll = () => {
         setFilter('ALL');
+
         handleClose()
     };
     const handleFilterTitle = () =>{
         setFilter('TITLE');
+
         handleClose();
     };
     const handleFilterAuthor = () => {
         setFilter('AUTHOR');
+
         handleClose();
     };
     const handleFilterContent = () => {
         setFilter('CONTENT');
+
         handleClose();
     };
     const handleFilterTags = () => {
         setFilter('TAGS');
+
         handleClose();
     };
+
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
