@@ -239,6 +239,32 @@ app.delete('/api/blogposts/:id', async (req, res) => {
     }
 });
 
+// Endpoint to update a post
+app.put('/api/blogposts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, content, author } = req.body;
+
+    try {
+        const post = await Blogpost.findById(id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        if (post.author !== author) {
+            return res.status(403).send('You are not authorized to edit this post');
+        }
+
+        post.title = title;
+        post.content = content;
+        await post.save();
+
+        res.send('Post updated successfully');
+    } catch (error) {
+        console.error('Error updating post:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 //Endpoint for logging in to the website
 app.post('/api/login', async (req, res) => {
     const { username, email, password } = req.body;
