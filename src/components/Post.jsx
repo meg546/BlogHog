@@ -5,9 +5,41 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 function Post({ _id, author, time, title, reactions, comments = [] }) {
     const [likeCount, setLikeCount] = useState(0);
+    const [userLiked, setUserLiked] = useState(false);
+    const [username, setUsername] = useState('');
+
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
+
+
+    useEffect(() => {
+        const fetchLikeStatus = async () => {
+            if (_id && username) {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/blogposts/${_id}?userId=${username}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setUserLiked(data.userLiked);
+                    } else {
+                        console.error('Error fetching like status');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        };
+
+        fetchLikeStatus();
+    }, [_id, username]);
 
     useEffect(() => {
         setLikeCount(reactions);
@@ -15,16 +47,26 @@ function Post({ _id, author, time, title, reactions, comments = [] }) {
 
     const handleLike = async (e) => {
         e.stopPropagation();
+        const url = `http://localhost:5000/api/blogposts/${_id}/like`;
+        console.log('Toggling like for post at:', url);
+
         try {
-            const response = await fetch(`http://localhost:5000/api/blogposts/${_id}/like`, {
+            const response = await fetch(url, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: username })
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setLikeCount(data.likes || 0);
+                setUserLiked(data.userLiked);
             } else {
-                console.error('Error updating likes');
+                const error = await response.text();
+                console.error('Error updating likes:', error);
+                alert(error);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -57,8 +99,8 @@ function Post({ _id, author, time, title, reactions, comments = [] }) {
             </Link>
             <div className="post-footer">
                 <Button className="reaction" onClick={handleLike}>
-                        <ThumbUpOffAltIcon /> {likeCount}
-                    </Button>
+                    {userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />} {likeCount}
+                </Button>
                 <Link to={`/posts/${_id}`} className="post-link">
                     <Button className="reaction" startIcon={<ChatBubbleOutlineIcon />}>
                         {comments.length}

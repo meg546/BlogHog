@@ -5,9 +5,9 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
-import CommentComponent from './CommentComponent';
 import TextField from '@mui/material/TextField';
 import { timeAgo } from './utilities';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 function DetailedPost() {
     const { _id } = useParams();
@@ -17,9 +17,9 @@ function DetailedPost() {
     const [newComment, setNewComment] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [username, setUsername] = useState('')
+    const [username, setUsername] = useState('');
+    const [userLiked, setUserLiked] = useState(false); 
 
-    // Fetch the username from localStorage
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         if (storedUsername) {
@@ -27,17 +27,18 @@ function DetailedPost() {
         }
     }, []);
 
-    // Fetch post data from the API, including comments
     useEffect(() => {
-        if (_id) {
+        if (_id && username) {
             const fetchPost = async () => {
+                console.log(`Fetching post with ID: ${_id} for user: ${username}`); // Debugging info
                 try {
-                    const response = await fetch(`http://localhost:5000/api/blogposts/${_id}`);
+                    const response = await fetch(`http://localhost:5000/api/blogposts/${_id}?userId=${username}`);
                     if (response.ok) {
                         const data = await response.json();
                         setPost(data);
                         setLikeCount(data.likes || 0);
                         setComments(data.comments || []);
+                        setUserLiked(data.userLiked);
                     } else {
                         setError('Post not found');
                     }
@@ -49,30 +50,41 @@ function DetailedPost() {
             };
 
             fetchPost();
-        } else {
+        } else if (!_id) {
             setError('Invalid post ID');
             setLoading(false);
+        } else if (!username) {
+            console.log('Username not yet available, waiting...'); 
         }
-    }, [_id]);
-    
+    }, [_id, username]);
+
     const handleLike = async (e) => {
         e.stopPropagation();
+        const url = `http://localhost:5000/api/blogposts/${_id}/like`;
+        console.log('Toggling like for post at:', url);
+
         try {
-            const response = await fetch(`http://localhost:5000/api/blogposts/${_id}/like`, {
+            const response = await fetch(url, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: username })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setLikeCount(data.likes);
+                setLikeCount(data.likes || 0);
+                setUserLiked(data.userLiked);
             } else {
-                console.error('Error updating likes');
+                const error = await response.text();
+                console.error('Error updating likes:', error);
+                alert(error);
             }
         } catch (error) {
             console.error('Error:', error);
         }
     };
-
 
     const handleShare = (e) => {
         e.stopPropagation();
@@ -93,7 +105,7 @@ function DetailedPost() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        author: username, 
+                        author: username,
                         text: newComment,
                     }),
                 });
@@ -148,7 +160,7 @@ function DetailedPost() {
                 </div>
                 <div className="post-footer">
                     <Button className="reaction" onClick={handleLike}>
-                        <ThumbUpOffAltIcon /> {likeCount}
+                        {userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />} {likeCount}
                     </Button>
                     <Button className="reaction">
                         <ChatBubbleOutlineIcon /> {comments.length}
@@ -192,6 +204,5 @@ function DetailedPost() {
         </div>
     );
 }
-
 
 export default DetailedPost;
