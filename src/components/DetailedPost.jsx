@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { timeAgo } from './utilities';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 function DetailedPost() {
     const { _id } = useParams();
+    const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [likeCount, setLikeCount] = useState(0);
     const [comments, setComments] = useState([]);
@@ -18,7 +21,8 @@ function DetailedPost() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
-    const [userLiked, setUserLiked] = useState(false); 
+    const [userLiked, setUserLiked] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -54,7 +58,7 @@ function DetailedPost() {
             setError('Invalid post ID');
             setLoading(false);
         } else if (!username) {
-            console.log('Username not yet available, waiting...'); 
+            console.log('Username not yet available, waiting...'); // Debugging info
         }
     }, [_id, username]);
 
@@ -126,6 +130,45 @@ function DetailedPost() {
         }
     };
 
+    const handleMoreClick = (event) => {
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleEdit = () => {
+        handleMenuClose();
+        navigate(`/edit/${_id}`);
+    };
+
+    const handleDelete = async () => {
+        handleMenuClose();
+        const url = `http://localhost:5000/api/blogposts/${_id}`;
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: username }) 
+            });
+            if (response.ok) {
+                alert('Post deleted successfully');
+                navigate('/');
+            } else {
+                const errorText = await response.text();
+                console.error('Error deleting post:', errorText);
+                alert('Error deleting post');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error deleting post');
+        }
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -147,7 +190,25 @@ function DetailedPost() {
                     <p className="author">{post.author}</p>
                     <div className="post-time-container">
                         <p className="post-time">{timeAgo(post.time)}</p>
-                        <MoreHorizIcon />
+                        {post.author === username && (
+                            <>
+                                <MoreHorizIcon
+                                    aria-controls="simple-menu"
+                                    aria-haspopup="true"
+                                    onClick={handleMoreClick}
+                                />
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                >
+                                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                                </Menu>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className="post-content">

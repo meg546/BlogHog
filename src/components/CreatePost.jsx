@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Tabs, Tab, Box } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { styled } from '@mui/material/styles';
+import { useParams, useNavigate } from 'react-router-dom';
+
 
 const Input = styled('input')({
     display: 'none',
@@ -14,6 +16,7 @@ function CreatePost() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [username, setUsername] = useState('')
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -58,9 +61,10 @@ function CreatePost() {
             });
     
             if (response.ok) {
-                setSuccessMessage('Post created successfully!');
+                alert('Post created successfully!');
                 setTitle('');
                 setBody('');
+                navigate('/');
             } else {
                 const errorText = await response.text();
                 console.error('Error creating post:', response.statusText);
