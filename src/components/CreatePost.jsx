@@ -11,6 +11,7 @@ function CreatePost() {
     const [selectedTab, setSelectedTab] = useState(0);
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
+    var [tags, setTags] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [username, setUsername] = useState('')
@@ -38,17 +39,25 @@ function CreatePost() {
             setSuccessMessage('Title and content are required.');
             return;
         }
-    
+
+        tags = tags
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .trim()
+        .split(/\s+/)
+        .filter(word => word.length > 0);
+
         const postData = {
             author: username,
             title,
             content: body,
+            tags,
             published: true,
         };
     
         console.log('Post Data: ', postData);
     
-        try {
+        try {            
+            console.log(tags);
             const response = await fetch('http://localhost:5000/api/blogposts', {
                 method: 'POST',
                 headers: {
@@ -61,6 +70,7 @@ function CreatePost() {
                 setSuccessMessage('Post created successfully!');
                 setTitle('');
                 setBody('');
+                setTags([]);
             } else {
                 const errorText = await response.text();
                 console.error('Error creating post:', response.statusText);
@@ -101,6 +111,16 @@ function CreatePost() {
                         rows={6}
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
+                        sx={{ marginBottom: 2 }}
+                    />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Tags Separated By Spaces"
+                        required
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        inputProps={{ maxLength: 300 }}
                         sx={{ marginBottom: 2 }}
                     />
                     <Button variant="contained" color="primary" onClick={handleSubmit}>Post</Button>

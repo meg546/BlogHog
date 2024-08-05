@@ -30,6 +30,7 @@ const upload = multer({
     }
 });
 
+/*
 app.get('/api/pfp', (req, res) => {
     imageSchema.find({})
     .then((data, err)=>{
@@ -41,6 +42,7 @@ app.get('/api/pfp', (req, res) => {
 });
 
 //Endpoint for uploading profile image to server
+
 app.post('/api/pfp', upload.single('image'), async (req, res, next) => {
     try {
         const {username} = req.body;
@@ -77,6 +79,7 @@ app.post('/api/pfp', upload.single('image'), async (req, res, next) => {
         res.send(err);
     }
 });
+*/
 
 mongoose.connect('mongodb://localhost:27017/bloghogDB', {
         useNewUrlParser: true
@@ -167,7 +170,7 @@ app.get('/api/blogposts/:id', async (req, res) => {
 
 // Endpoint for creating blogposts
 app.post('/api/blogposts', async (req, res) => {
-    const {author, title, content, published } = req.body;
+    const {author, title, content, tags, published} = req.body;
 
     console.log('Received data:', req.body);
 
@@ -197,6 +200,7 @@ app.post('/api/blogposts', async (req, res) => {
             author,
             title,
             content,
+            tags,
             published: published === 'true',
             route,
             time,

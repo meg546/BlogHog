@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Post from './Post';
 import {timeAgo} from './utilities';
 
-function Home({searchTerms}) {
+function Home({searchTerms, filter}) {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
@@ -27,12 +27,24 @@ function Home({searchTerms}) {
         fetchPosts();
     }, []);
 
-    const filteredPosts = posts.filter(post => 
-        post.title.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        post.author.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        post.text?.toLowerCase().includes(searchTerms.toLowerCase()) || 
-        post.tags?.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()))
-    );
+    const filterPosts = (post) => {
+        if (filter == 'TITLE') {
+            return post.title && post.title.toLowerCase().includes(searchTerms.toLowerCase());
+        } else if (filter == 'AUTHOR') {
+            return post.author && post.author.toLowerCase().includes(searchTerms.toLowerCase());
+        } else if (filter == 'CONTENT') {
+            return post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase());
+        } else if (filter == 'TAGS') {
+            return post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()));
+        } else {
+            return (post.title && post.title.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                   (post.author && post.author.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                   (post.text && post.text.toLowerCase().includes(searchTerms.toLowerCase())) ||
+                   (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase())));
+        }
+    };
+
+    const filteredPosts = posts.filter(filterPosts);
 
     return (
         <div className="home">

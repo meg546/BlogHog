@@ -12,6 +12,7 @@ import DetailedPost from './DetailedPost';
 function App() {
     const [username, setUsername] = useState(localStorage.getItem('username') || '');
     const [searchTerms, setSearchTerms] = useState('');
+    const [filter, setFilter] = useState('ALL')
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -22,14 +23,14 @@ function App() {
 
     return (
         <Router>
-            <Navbar setSearchTerms={setSearchTerms} />
+            <Navbar setSearchTerms={setSearchTerms} setFilter={setFilter} />
             <Routes>
-                <Route path="/" element={<Home searchTerms={searchTerms} />} />
+                <Route path="/" element={<Home searchTerms={searchTerms} filter={filter} />} />
                 <Route path="/posts/:_id" element={<DetailedPost/>} />
                 <Route path="/CreatePost" element={<CreatePost />} />
                 <Route path="/Register" element={<Register />}/>
                 <Route path="/Login" element={<Login/>}/>
-                <Route path="/Profile" element={<Profile searchTerms={searchTerms} />}/>
+                <Route path="/Profile" element={<Profile searchTerms={searchTerms} filter={filter} />}/>
             </Routes>
             <Footer />
         </Router>

@@ -4,11 +4,42 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
-import { Input, InputAdornment, useTheme } from '@mui/material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import TuneIcon from '@mui/icons-material/Tune';
+import { Input, InputAdornment, useTheme, Divider } from '@mui/material';
 
-function Navbar({setSearchTerms}) {
+function Navbar({setSearchTerms, setFilter}) {
     const handleSearchChange = (e) => {
         setSearchTerms(e.target.value);
+    };
+    const handleFilterAll = () => {
+        setFilter('ALL');
+        handleClose()
+    };
+    const handleFilterTitle = () =>{
+        setFilter('TITLE');
+        handleClose();
+    };
+    const handleFilterAuthor = () => {
+        setFilter('AUTHOR');
+        handleClose();
+    };
+    const handleFilterContent = () => {
+        setFilter('CONTENT');
+        handleClose();
+    };
+    const handleFilterTags = () => {
+        setFilter('TAGS');
+        handleClose();
+    };
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
     };
 
     const theme = useTheme();
@@ -35,15 +66,45 @@ function Navbar({setSearchTerms}) {
                         BlogHog
                     </Link>
                 </h1>
+                <div></div>
                 <Input
                     placeholder="Search here…"
                     onChange={handleSearchChange}
                     startAdornment={
                         <InputAdornment position="start">
-                            <SearchIcon />
+                            <SearchIcon/>
                         </InputAdornment>
                     }
+                    endAdornment={
+                    <InputAdornment position="end">
+                        <TuneIcon
+                            id="basic-button"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                        />
+                    </InputAdornment>
+                    }
                 />
+            <div>
+            <Menu
+            id="filter-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+            'aria-labelledby': 'basic-button',
+            }}
+            >
+                <MenuItem onClick={handleFilterAll}>All</MenuItem>
+                <Divider />
+                <MenuItem onClick={handleFilterTitle}>Title</MenuItem>
+                <MenuItem onClick={handleFilterAuthor}>Author</MenuItem>
+                <MenuItem onClick={handleFilterContent}>Content</MenuItem>
+                <MenuItem onClick={handleFilterTags}>Tags</MenuItem>
+            </Menu>
+            </div>
                 <div className="button-container">
                     <Button 
                         variant="contained" 
