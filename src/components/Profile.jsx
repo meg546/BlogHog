@@ -7,11 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import ProfileHome from './ProfileHome';
 
 function Profile({searchTerms}) {
+    const [file, setFile] = useState(null);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
     const [hideEmail, setHideEmail] = useState(true);
     const [hidePassword, setHidePassword] = useState(true);
+    const [hidePosts, setHidePosts] = useState(true);
     const navigate = useNavigate();
 
     function stringToColor(string) {
@@ -58,6 +61,11 @@ function Profile({searchTerms}) {
         if (storedPassword) {
             setPassword(storedPassword);
         }
+
+        const profHome = document.getElementById('profHome');
+        if (profHome) {
+            profHome.style.display = 'none';
+        }
     }, []);
 
     const handleToggleEmail = () => {
@@ -68,9 +76,54 @@ function Profile({searchTerms}) {
         setHidePassword(!hidePassword);
     };
 
+    const handleTogglePosts = () => {
+        setHidePosts(!hidePosts);
+        const profHome = document.getElementById('profHome');
+        if(!hidePosts){
+            profHome.style.display = 'none';
+        }
+        else{
+            profHome.style.display = 'inline';
+        }
+    };
+
     const handleLogout = () => {
         localStorage.clear();
         navigate('/Login');
+    };
+
+    const handleFileSyntax = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+    const handleFileUpload = async () => {
+        if (!file) {
+            setMessage('Please upload a file');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('username', username);
+
+        try {
+            const response = await fetch('http://localhost:5000/api/pfp', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.text();
+            alert(result);
+            if (response.ok){
+                setMessage("Profile icon changed.")
+            }
+            else{
+                setMessage("Unknown error")
+            }
+        } catch (error) {
+            console.log(error);
+            setMessage(error)
+        }
     };
 
     return (
@@ -123,14 +176,30 @@ function Profile({searchTerms}) {
                 <Grid sm={2}>
                 </Grid>
                 <Grid sm={12}>
-                <Button variant="contained">View Blog Posts</Button>
+                <Button variant="contained" onClick={handleTogglePosts}>
+                    {hidePosts ? 'View Blog Posts' : 'Hide Blog Posts'}
+                </Button>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
                 <Grid sm={12} >
-                <Button variant="contained">Change Icon</Button>
+                <div>
+                <input
+                type="file"
+                accept="image/png"
+                onChange={handleFileSyntax}
+                style={{ display: 'none' }}
+                id="file-input"
+                />
+                <Button variant="contained"
+                onClick={() => {
+                document.getElementById('file-input').click()
+                handleFileUpload
+                }}
+                >Change Icon</Button>
+                </div>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
@@ -142,7 +211,9 @@ function Profile({searchTerms}) {
                 <Grid sm={2}>
                 </Grid>
             </Grid>
-            <ProfileHome searchTerms={searchTerms}/>
+            <div id='profHome'>
+                <ProfileHome searchTerms={searchTerms}/>
+            </div>
         </Container>
     )
 };

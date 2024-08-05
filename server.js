@@ -1,16 +1,82 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');    
+const multer = require('multer');
+const fs = require('fs');
+const path = require("path");
+const sharp = require('sharp');
+const cors = require('cors');
 const User = require('./user.js');
 const Blogpost = require('./blogpost.js');
 
 const app = express();
-const port = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const storage = multer.memoryStorage();
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 512 * 512 },
+    fileFilter: (req, file, cb) => {
+        // Accept only PNG files
+        if (file.mimetype === 'image/png') {
+            cb(null, true);
+        } else {
+            cb(new Error('File type not allowed!'), false);
+        }
+    }
+});
+
+app.get('/api/pfp', (req, res) => {
+    imageSchema.find({})
+    .then((data, err)=>{
+        if(err){
+            console.log(err);
+        }
+        res.render('imagepage',{items: data})
+    })
+});
+
+//Endpoint for uploading profile image to server
+app.post('/api/pfp', upload.single('image'), async (req, res, next) => {
+    try {
+        const {username} = req.body;
+        const filebuffer = req.file.buffer
+    
+        const {width, height} = await sharp(filebuffer).metadata();
+    
+        if (width > 512 || height > 512){
+            return res.send("Profile Icon must be 512x512 or smaller!")
+        }
+        const filename = username + '.png'
+
+        await sharp (filebuffer).toFile(path.join(__dirname, 'uploads', filename));
+
+        var obj = {
+            name: username,
+            desc: '',
+            img: {
+                data: fs.readFileSync(path.join(__dirname, 'uploads', filename)),
+                contentType: "image/png"
+            }
+        }
+
+        imageSchema.create(obj, (err, item) => {
+            if(err){
+                console.log(err)
+                fs.unlinkSync(path.join(__dirname, 'uploads', filename))
+                res.send(err)
+            }
+            res.json({ success: true, message: "Icon uploaded"})
+        });
+    } catch(error){
+        console.log(err);
+        res.send(err);
+    }
+});
 
 mongoose.connect('mongodb://localhost:27017/bloghogDB', {
         useNewUrlParser: true
@@ -204,6 +270,9 @@ app.post('/api/blogposts/:id/like', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+var port = process.env.PORT || 5000;
+app.listen(port, err => {
+    if(err)
+        throw err
+    console.log('Server running on port', port);
 });

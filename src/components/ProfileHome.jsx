@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Post from './Post';
 import {timeAgo} from './utilities';
 
-function Home({searchTerms}) {
+function ProfileHome({searchTerms}) {
     const [posts, setPosts] = useState([]);
     const [username, setUsername] = useState('');
 
@@ -10,6 +10,7 @@ function Home({searchTerms}) {
         const storedUsername = localStorage.getItem('username');
         if (storedUsername) {
             setUsername(storedUsername);
+            console.log(storedUsername)
         }
 
 
@@ -33,8 +34,8 @@ function Home({searchTerms}) {
     }, []);
 
     const filteredPosts = posts.filter(post => 
+        post.author === username &&
         post.title.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        post.author.toLowerCase().includes(searchTerms.toLowerCase()) ||
         post.text?.toLowerCase().includes(searchTerms.toLowerCase()) || 
         post.tags?.some(tag => tag.toLowerCase().includes(searchTerms.toLowerCase()))
     );
@@ -45,7 +46,7 @@ function Home({searchTerms}) {
                 <Post 
                     key={post._id}
                     _id={post._id}
-                    author={post.author == username} 
+                    author={post.author} 
                     time={timeAgo(post.time)}
                     title={post.title}
                     reactions={post.likes}
@@ -56,4 +57,4 @@ function Home({searchTerms}) {
     );
 }
 
-export default Home;
+export default ProfileHome;
