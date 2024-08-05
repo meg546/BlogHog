@@ -6,7 +6,7 @@ import { capitalize } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import ProfileHome from './ProfileHome';
 
-function Profile({searchTerms}) {
+function Profile({searchTerms, filter}) {
     const [file, setFile] = useState(null);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -182,6 +182,7 @@ function Profile({searchTerms}) {
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
+                {/*
                 <Grid sm={2}>
                 </Grid>
                 <Grid sm={12} >
@@ -203,16 +204,17 @@ function Profile({searchTerms}) {
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
+                */}
                 <Grid sm={2}>
                 </Grid>
                 <Grid sm={12} >
-                <Button variant="contained" color="error" onClick={handleLogout}>Log Out</Button>
+                <Button variant="outlined" color="error" onClick={handleLogout}>Log Out</Button>
                 </Grid>
                 <Grid sm={2}>
                 </Grid>
             </Grid>
             <div id='profHome'>
-                <ProfileHome searchTerms={searchTerms}/>
+                <ProfileHome searchTerms={searchTerms} filter={filter}/>
             </div>
         </Container>
     )
