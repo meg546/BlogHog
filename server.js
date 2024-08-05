@@ -212,6 +212,29 @@ app.post('/api/blogposts', async (req, res) => {
     }
 });
 
+// Endpoint to delete a post
+app.delete('/api/blogposts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    try {
+        const post = await Blogpost.findById(id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        if (post.author !== userId) {
+            return res.status(403).send('You are not authorized to delete this post');
+        }
+
+        await Blogpost.findByIdAndDelete(id);
+        res.send('Post deleted successfully');
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 //Endpoint for logging in to the website
 app.post('/api/login', async (req, res) => {
     const { username, email, password } = req.body;
