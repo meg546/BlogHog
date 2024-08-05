@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Padding } from '@mui/icons-material';
 
 function EditPost() {
     const { _id } = useParams();
@@ -119,7 +118,6 @@ function EditPost() {
                         variant="standard"
                         fullWidth
                         multiline
-                        rows={4}
                         value={content}
                         onChange={handleContentChange}
                         className="edit-textfield"
