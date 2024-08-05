@@ -129,29 +129,29 @@ function Post({ _id, author, time, title, reactions, comments = [] }) {
             <div className="post-header">
                 <Link to={`/posts/${_id}`} className="post-link">
                     <p className="author">{author}</p>
-                    <div className="post-time-container">
-                        <p className="post-time">{time}</p>
-                    </div>
                 </Link>
-                {author === username && (
-                    <>
-                        <MoreHorizIcon
-                            aria-controls="simple-menu"
-                            aria-haspopup="true"
-                            onClick={handleMoreClick}
-                        />
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={handleMenuClose}
-                        >
-                            <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                        </Menu>
-                    </>
-                )}
+                <div className="post-time-container">
+                    <p className="post-time">{time}</p>
+                    {author === username && (
+                        <>
+                            <MoreHorizIcon
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={handleMoreClick}
+                            />
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                            </Menu>
+                        </>
+                    )}
+                </div>
             </div>
             <Link to={`/posts/${_id}`} className="post-link">
                 <div className="post-content">
